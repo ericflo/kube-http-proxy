@@ -90,20 +90,20 @@ func NewProxy(hosts map[string]string) (*Proxy, error) {
 func (p Proxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	split := strings.Split(strings.ToLower(req.Host), ":")
 	if len(split) == 0 {
-		http.Error(w, "Invalid hostname", 403)
+		http.Error(w, "Invalid hostname "+req.Host, 403)
 		return
 	}
 	if service, ok := p.hosts[split[0]]; ok {
 		host := HostForService(service)
 		if host == "" {
-			http.Error(w, "Unknown hostname", 403)
+			http.Error(w, "Could not look up service "+service, 403)
 			return
 		}
 		req.URL.Scheme = "http"
 		req.URL.Host = host
 		p.fwd.ServeHTTP(w, req)
 	} else {
-		http.Error(w, "Unknown hostname", 403)
+		http.Error(w, "Unknown hostname "+req.Host, 403)
 	}
 }
 
