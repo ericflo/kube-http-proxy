@@ -8,4 +8,4 @@ WORKDIR /go/src/app
 COPY . /go/src/app
 RUN gb build
 
-ENTRYPOINT /go/src/app/bin/kube-http-proxy
+CMD ["/go/src/app/bin/kube-http-proxy"]
