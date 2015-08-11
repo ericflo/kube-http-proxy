@@ -30,28 +30,28 @@ func HostForService(service string) string {
 
 type hostFlags map[string]string
 
-func (df *hostFlags) String() string {
-	resp := make([]string, 0, len(*df))
-	for domain, service := range *df {
+func (hf *hostFlags) String() string {
+	resp := make([]string, 0, len(*hf))
+	for domain, service := range *hf {
 		resp = append(resp, fmt.Sprintf("--domain=%s=%s", service, domain))
 	}
 	return strings.Join(resp, " ")
 }
 
-func (df *hostFlags) Set(value string) error {
+func (hf *hostFlags) Set(value string) error {
 	split := strings.Split(value, "=")
 	if len(split) != 2 {
 		log.Errorln("Invalid domain format: " + value)
 		return nil
 	}
 	service := strings.ToUpper(strings.TrimSpace(split[0]))
-	host := strings.ToLower(strings.TrimSpace(split[1]))
+	domain := strings.ToLower(strings.Trim(strings.TrimSpace(split[1]), "\""))
 	if proxyHost := HostForService(service); proxyHost == "" {
 		// If we got here, then we hit an error and already logged it, continue
 		// by returning nil instead of an error
 		return nil
 	}
-	(*df)[host] = service
+	(*hf)[domain] = service
 	return nil
 }
 
