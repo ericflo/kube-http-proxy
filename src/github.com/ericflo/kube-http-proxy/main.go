@@ -96,7 +96,11 @@ func (p Proxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if service, ok := p.hosts[split[0]]; ok {
 		host := HostForService(service)
 		if host == "" {
-			http.Error(w, "Could not look up service "+service, 403)
+			http.Error(w, fmt.Sprintf(
+				"Could not look up service %s for hostname %s",
+				service,
+				req.Host,
+			), 403)
 			return
 		}
 		req.URL.Scheme = "http"
@@ -139,6 +143,6 @@ func main() {
 
 	// On the main thread, listen for & proxy insecure HTTP conns
 	log.WithField("port", "80").Infoln("Starting HTTP proxy")
-	server := &http.Server{Addr: ":9000", Handler: proxy}
+	server := &http.Server{Addr: ":80", Handler: proxy}
 	server.ListenAndServe()
 }
